@@ -1,0 +1,601 @@
+/* Discovery Network Page */
+.discovery-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f5f5f5;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+/* Status Bar */
+.discovery-status-bar {
+    background-color: #fff;
+    border-bottom: 1px solid #000;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.status-title {
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.status-info {
+    display: flex;
+    gap: 30px;
+    color: #666;
+}
+
+/* Main Layout */
+.discovery-main {
+    display: grid;
+    grid-template-columns: 120px 1fr 280px;
+    gap: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Left Sidebar */
+.discovery-sidebar {
+    background-color: #ccc;
+    border-right: 1px solid #000;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.sidebar-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #000;
+    color: #000;
+}
+
+/* Center Content */
+.discovery-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 60px;
+    background-color: #ccc;
+    border-right: 1px solid #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.discovery-title {
+    font-size: 72px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    text-align: center;
+    color: #000;
+    margin: 0;
+}
+
+/* Network Visualization */
+.network-container {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 400px;
+    border: 1px solid #000;
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.network-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Right Panel */
+.discovery-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    overflow-y: hidden;
+    background-color: #f5f5f5;
+}
+
+.discovery-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.discovery-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.discovery-panel::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 3px;
+}
+
+/* Panel Section */
+.panel-section {
+    border: 1px solid #000;
+    padding: 15px;
+    background-color: #fff;
+}
+
+.section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* Overlap Section */
+.overlap-section {
+    background-color: #ffff00;
+    border: 2px solid #000;
+}
+
+.overlap-value {
+    font-size: 64px;
+    font-weight: 900;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.overlap-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.overlap-tags {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Pie Chart */
+.pie-chart {
+    width: 100%;
+    aspect-ratio: 1;
+    margin: 8px 0;
+}
+
+.pie-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.density-info {
+    font-size: 12px;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Nodes Section */
+.nodes-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    padding: 0;
+}
+
+.node-stat {
+    border: 1px solid #000;
+    padding: 12px;
+    background-color: #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.node-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #000;
+}
+
+.node-value {
+    font-size: 28px;
+    font-weight: 900;
+    color: #000;
+}
+
+/* Pulse Section */
+.pulse-section {
+    background-color: #000;
+    color: #fff;
+}
+
+.pulse-section .section-title {
+    color: #fff;
+}
+
+.pulse-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pulse-item {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+/* System Section */
+.system-section {
+    font-size: 8px;
+    line-height: 1.4;
+    color: #999;
+}
+
+.system-text {
+    margin: 0;
+}
+
+/* Footer */
+.discovery-footer {
+    background-color: #fff;
+    border-top: 1px solid #000;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #666;
+}
+
+.footer-right {
+    display: flex;
+    gap: 30px;
+}
+
+/* Discovery Page Layout */
+.discovery-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+    padding: 30px 40px 0 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: calc(100vh - 80px);
+    overflow: hidden;
+}
+
+/* Left Column - Input */
+.discovery-input-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 100%;
+    overflow: visible;
+    border-right: 1px solid #000;
+    padding-right: 30px;
+    position: relative;
+}
+
+.discovery-input-column::before {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -9999px;
+    height: calc(100vh + 9999px);
+    width: 1px;
+    background-color: #000;
+}
+
+.input-status {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+.input-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Entry Input Section */
+.entry-input-section {
+    border: 1px solid #000;
+    padding: 15px;
+    margin-top: 12px;
+}
+
+.entry-input-textarea {
+    width: 100%;
+    height: 200px;
+    border: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    resize: none;
+    padding: 0;
+    background: transparent;
+    color: #000;
+}
+
+.entry-input-textarea::placeholder {
+    color: #999;
+}
+
+.entry-input-textarea:focus {
+    outline: none;
+}
+
+/* Multimodal Input */
+.multimodal-input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    border: 1px solid #000;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.input-option-compact {
+    border: 1px solid #000;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.input-option-compact:hover {
+    background-color: #f0f0f0;
+}
+
+.input-option-compact .input-option-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 0;
+    display: block;
+}
+
+.input-option-compact .input-option-action {
+    font-size: 11px;
+    color: #999;
+}
+
+/* Analyze Button */
+.discovery-input-column .analyze-button {
+    background-color: #999;
+    width: 100%;
+    padding: 16px;
+    color: #fff;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.discovery-input-column .analyze-button:hover {
+    background-color: #777;
+}
+
+/* Engine Status */
+.engine-status {
+    border: 1px solid #000;
+    padding: 12px;
+    background-color: #f5f5f5;
+    margin-top: 10px;
+}
+
+.status-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.status-message {
+    font-size: 10px;
+    line-height: 1.4;
+    color: #666;
+    margin: 0;
+}
+
+/* Right Column - Discovery Content */
+.discovery-content-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 20px;
+}
+
+.discovery-content-column::-webkit-scrollbar {
+    width: 8px;
+}
+
+.discovery-content-column::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.discovery-content-column::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 4px;
+}
+
+.results-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+/* Suggested Starters Section */
+.starters-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.starters-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0 0 8px 0;
+}
+
+.starters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.starter-card {
+    border: 1px solid #000;
+    padding: 15px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 140px;
+}
+
+.starter-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+    color: #000;
+}
+
+.starter-prompt {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+    flex: 1;
+}
+
+/* Curation Engine */
+.curation-engine {
+    border: 2px dotted #000;
+    padding: 30px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 200px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.curation-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    margin: 0;
+}
+
+.curation-description {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    max-width: 400px;
+}
+
+.loading-indicator {
+    margin-top: 12px;
+}
+
+.loading-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #999;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .discovery-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .discovery-input-column {
+        height: auto;
+        overflow: visible;
+        border-right: none;
+        padding-right: 0;
+    }
+
+    .discovery-input-column::before {
+        display: none;
+    }
+
+    .starters-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .discovery-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .starters-grid {
+        grid-template-columns: 1fr;
+    }
+}

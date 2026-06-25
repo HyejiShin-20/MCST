@@ -1,0 +1,131 @@
+[
+  {
+    "id": "presentation-shame-anxiety",
+    "text": "오늘 발표를 망쳐서 너무 창피하고 불안했다. 다시 자신감을 찾고 싶다.",
+    "expected_emotions_any": ["불안", "창피함"],
+    "expected_topics_any": ["발표", "자존감"],
+    "expected_primary_event": "평가 상황 이후의 자신감 저하",
+    "expected_support_any": ["공감", "안정", "회복", "동기부여"]
+  },
+  {
+    "id": "success-joy-pressure",
+    "text": "공모전 1차에 붙어서 정말 기쁜데 다음 발표를 생각하니까 벌써 숨이 막힌다.",
+    "expected_emotions_any": ["기쁨", "불안"],
+    "expected_topics_any": ["성취", "발표"],
+    "expected_primary_event": "평가 상황 이후의 자신감 저하",
+    "expected_support_any": ["안정", "동기부여"]
+  },
+  {
+    "id": "anger-relationship-repair",
+    "text": "친구 말이 너무 억울해서 화가 났지만 관계를 완전히 망치고 싶지는 않다.",
+    "expected_emotions_any": ["분노"],
+    "expected_topics_any": ["관계"],
+    "expected_primary_event": "관계 갈등 또는 연결 욕구",
+    "expected_support_any": ["공감", "안정"]
+  },
+  {
+    "id": "negative-relationship-hurt",
+    "text": "친구가 내 말을 무시해서 화났는데, 집에 와서는 내가 별로 중요한 사람이 아닌 것 같아서 울었다.",
+    "expected_emotions_any": ["분노", "슬픔"],
+    "expected_topics_any": ["관계", "자존감"],
+    "expected_primary_event": "관계 갈등 또는 연결 욕구",
+    "expected_support_any": ["공감", "안정", "회복"],
+    "expected_intent": "negative_emotion_based"
+  },
+  {
+    "id": "lonely-but-free",
+    "text": "혼자 있는 게 쓸쓸하긴 한데 동시에 누구 눈치도 안 봐서 조금 자유롭다.",
+    "expected_emotions_any": ["외로움"],
+    "expected_topics_any": ["일상"],
+    "expected_primary_event": "일상 감정 기록",
+    "expected_support_any": ["공감", "회복"]
+  },
+  {
+    "id": "space-curiosity",
+    "text": "우주비행사가 되고 싶어졌다. 별과 미래를 생각하니 설렌다.",
+    "expected_emotions_any": ["설렘"],
+    "expected_topics_any": ["우주", "진로"],
+    "expected_primary_event": "진로/미래 탐색",
+    "expected_support_any": ["동기부여", "확장"]
+  },
+  {
+    "id": "breakup-loss-recovery",
+    "text": "이별하고 나니 너무 허전하고 아무것도 하기 싫다. 그래도 오늘은 조금 괜찮아지고 싶다.",
+    "expected_emotions_any": ["슬픔", "무기력"],
+    "expected_topics_any": ["이별", "회복"],
+    "expected_primary_event": "관계 상실/이별",
+    "expected_support_any": ["공감", "안정", "회복"]
+  },
+  {
+    "id": "calm-rain-reading",
+    "text": "비 오는 날 집에서 책을 읽었더니 마음이 잔잔해졌다. 이런 조용한 기분을 더 오래 느끼고 싶다.",
+    "expected_emotions_any": ["평온"],
+    "expected_topics_any": ["비 오는 날", "예술"],
+    "expected_primary_event": "잔잔한 일상",
+    "expected_support_any": ["음미", "유지", "가벼운 성찰", "몰입"],
+    "expected_intent": "neutral_daily_based"
+  },
+  {
+    "id": "fatigue-change-desire",
+    "text": "요즘 계속 지치고 무기력하다. 그런데 이대로 있고 싶지는 않고 뭔가 바꿔보고 싶다.",
+    "expected_emotions_any": ["무기력", "희망"],
+    "expected_topics_any": ["일상"],
+    "expected_primary_event": "일상 감정 기록",
+    "expected_support_any": ["안정", "회복"],
+    "expected_intent": "mixed_emotion_based"
+  },
+  {
+    "id": "achievement-pride-relief",
+    "text": "오늘 발표가 생각보다 잘 끝났다. 긴장했는데 끝나고 나니까 너무 뿌듯했다.",
+    "expected_emotions_any": ["뿌듯함", "안도감"],
+    "expected_topics_any": ["발표", "성취"],
+    "expected_primary_event": "평가 상황 이후의 자신감 저하",
+    "expected_support_any": ["축하", "음미", "영감"],
+    "expected_intent": "mixed_emotion_based"
+  },
+  {
+    "id": "joy-playful-friends",
+    "text": "오랜만에 친구들이랑 놀았는데 너무 웃겨서 하루 종일 기분이 좋았다.",
+    "expected_emotions_any": ["기쁨"],
+    "expected_topics_any": ["친구", "일상"],
+    "expected_primary_event": "관계 갈등 또는 연결 욕구",
+    "expected_support_any": ["증폭", "음미"],
+    "expected_intent": "positive_emotion_based"
+  },
+  {
+    "id": "ordinary-home-rest",
+    "text": "오늘은 별일 없었다. 집에 와서 밥 먹고 씻고 그냥 누워 있었다.",
+    "expected_emotions_any": ["평범함"],
+    "expected_topics_any": ["일상", "집", "음식"],
+    "expected_primary_event": "잔잔한 일상",
+    "expected_support_any": ["유지", "배경", "발견"],
+    "expected_intent": "neutral_daily_based"
+  },
+  {
+    "id": "joy-fatigue-low-energy",
+    "text": "오늘 좋은 일이 있어서 기분은 좋은데 너무 피곤해서 아무것도 크게 하고 싶지는 않다.",
+    "expected_emotions_any": ["기쁨", "무기력"],
+    "expected_topics_any": ["성취", "일상"],
+    "expected_primary_event": "성취와 여운",
+    "expected_support_any": ["안정", "회복", "축하", "음미"],
+    "expected_intent": "mixed_emotion_based"
+  },
+  {
+    "id": "boredom-light-discovery",
+    "text": "오늘은 그냥 좀 심심했다. 딱히 뭘 하고 싶은 건 없는데 새로운 걸 보면 좋을 것 같기도 하다.",
+    "expected_emotions_any": ["무료함"],
+    "expected_topics_any": ["일상"],
+    "expected_primary_event": "일상 감정 기록",
+    "expected_support_any": ["발견", "가벼운 성찰"],
+    "expected_intent": "neutral_daily_based"
+  },
+  {
+    "id": "anticipation-anxiety-mixed",
+    "text": "내일 발표가 있는데 떨리기도 하고 잘하고 싶어서 이상하게 설레기도 한다.",
+    "expected_emotions_any": ["불안", "설렘"],
+    "expected_topics_any": ["발표", "성취"],
+    "expected_primary_event": "평가 상황 이후의 자신감 저하",
+    "expected_support_any": ["안정", "영감"],
+    "expected_intent": "mixed_emotion_based"
+  }
+]

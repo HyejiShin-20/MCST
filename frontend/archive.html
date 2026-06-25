@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아카이브 - 감정·문화 저널</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/archive.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-title">◐ 감정·문화</div>
+        <nav>
+            <a href="index.html">일기</a>
+            <a href="archive.html" class="active">나의 기록</a>
+            <a href="discovery.html">분석</a>
+            <a href="repository.html">저장소</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="archive-container">
+        <!-- Left Sidebar -->
+        <div class="archive-sidebar">
+            <h1 class="sidebar-title">나의 문화 기록</h1>
+
+            <div class="user-panel" data-user-panel>
+                <span class="user-label">USER</span>
+                <input class="user-input" data-user-input type="text" value="demo" aria-label="username">
+                <button class="user-button" data-user-login type="button">LOAD</button>
+                <span class="current-user" data-current-user>Demo User</span>
+            </div>
+
+            <!-- Archive Summary -->
+            <div class="summary-section">
+                <div class="summary-stats">
+                    <div class="stat-row">
+                        <span class="stat-name">교환된 문화 데이터 수</span>
+                        <span class="stat-value">342</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">발견한 나의 취향 유형</span>
+                        <span class="stat-value">12</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">연관도</span>
+                        <span class="stat-value">0.89</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refine View -->
+            <div class="refine-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn filter-btn-active">모든 데이터</button>
+                    <button class="filter-btn">나의 취향 유형</button>
+                    <button class="filter-btn">나의 일기</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="archive-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <span class="sort-label">타임라인 / 정렬: 시간순</span>
+            </div>
+
+            <!-- Timeline Background -->
+            <div class="timeline-container" id="archiveTimeline">
+                <!-- Timeline Events -->
+                <div class="timeline-event">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <h3 class="card-title">클러스터: 영화적 허무주의</h3>
+                        <p class="card-content">"사용자 7771"과의 상호작용 후 첫 번째 공명이 감지되었습니다. 중반세기 프레임과 산업용 사운드스케이프에 대한 공통된 미적 관심을 확인했습니다.</p>
+                        <div class="card-tags">
+                            <span class="card-tag">존재주의</span>
+                            <span class="card-tag">로파이 입자</span>
+                            <span class="card-tag">차가운 포도주</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <h3 class="card-title">동기화: ECHO_01</h3>
+                        <p class="card-content">"수직 건축"에 관한 3개의 청각 신호와 1개의 텍스트 단편 전송.</p>
+                        <div class="card-tags">
+                            <span class="card-tag">바이오시설</span>
+                            <span class="card-tag">필드 녹음</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="timeline-dot timeline-dot-yellow"></div>
+                    <div class="timeline-card">
+                        <h3 class="card-title">클러스터: 신고전주의/앰비언트</h3>
+                        <p class="card-content">노르딕 부문과의 지속적인 동기화. 청각 텍스처와 시간 인식 메모에서 상당한 중복이 있습니다.</p>
+                        <div class="card-tags">
+                            <span class="card-tag">미니멀 피아노</span>
+                            <span class="card-tag">느린 시간</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="card-label">일기 통합</div>
+                        <h3 class="card-title">항목: 앵커 포인트 09</h3>
+                        <p class="card-content">"신주쿠의 빗"에 관한 일기 항목이 처리되었습니다. 도쿄 공명장 내에서 42개의 새로운 가능한 노드 연결이 생성되었습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/archive.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "positive-achievement",
+    "content_type": "music",
+    "title": "테스트 축하곡",
+    "creator": "sample",
+    "genre": "pop",
+    "summary": "발표를 잘 끝내고 스스로 뿌듯해하는 사람에게 밝은 축하와 자신감을 전하는 곡.",
+    "expected_emotion_any": ["뿌듯함", "자신감", "기쁨"],
+    "expected_theme_any": ["성취", "도전"],
+    "expected_role_any": ["축하", "음미", "영감"]
+  },
+  {
+    "id": "neutral-daily",
+    "content_type": "music",
+    "title": "테스트 일상곡",
+    "creator": "sample",
+    "genre": "instrumental",
+    "summary": "집에서 밥을 먹고 쉬는 평범한 하루에 조용히 틀어두기 좋은 저부담 배경 음악.",
+    "expected_emotion_any": ["평범함", "잔잔함"],
+    "expected_theme_any": ["일상", "집", "휴식", "음식"],
+    "expected_role_any": ["유지", "배경", "발견"]
+  },
+  {
+    "id": "interest-space",
+    "content_type": "book",
+    "title": "테스트 우주책",
+    "creator": "sample",
+    "genre": "science",
+    "summary": "우주비행사, 별, 행성, 과학 탐험을 통해 미래와 우주에 대한 호기심을 넓히는 책.",
+    "expected_emotion_any": ["호기심", "경외", "희망"],
+    "expected_theme_any": ["우주", "과학", "미래"],
+    "expected_role_any": ["탐색", "학습", "몰입", "영감"]
+  }
+]

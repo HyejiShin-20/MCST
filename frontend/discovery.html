@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>분석 - 감정·문화 저널</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/discovery.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-title">◐ 감정·문화</div>
+        <nav>
+            <a href="index.html">일기</a>
+            <a href="archive.html">나의 기록</a>
+            <a href="discovery.html" class="active">분석</a>
+            <a href="repository.html">저장소</a>
+        </nav>
+    </header>
+
+    <!-- Discovery Container -->
+    <div class="discovery-page">
+        <!-- Top Status Bar -->
+        <div class="discovery-status-bar">
+            <div class="status-title">네트워크 // 분석</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="discovery-main">
+            <!-- Left Sidebar -->
+            <div class="discovery-sidebar">
+                <div class="user-panel" data-user-panel>
+                    <span class="user-label">USER</span>
+                    <input class="user-input" data-user-input type="text" value="demo" aria-label="username">
+                    <button class="user-button" data-user-login type="button">LOAD</button>
+                    <span class="current-user" data-current-user>Demo User</span>
+                </div>
+                <div class="sidebar-item">특징</div>
+                <div class="sidebar-item">취향 유형</div>
+                <div class="sidebar-item">취향 깊이</div>
+                <div class="sidebar-item">히스토리</div>
+            </div>
+
+            <!-- Center Content -->
+            <div class="discovery-center">
+                <h1 class="discovery-title">공유된 패턴</h1>
+
+                <!-- Network Visualization -->
+                <div class="network-container">
+                    <svg class="network-svg" viewBox="0 0 500 500">
+                        <!-- Central Circle -->
+                        <circle cx="250" cy="250" r="80" fill="#ffffcc" stroke="#000" stroke-width="2"/>
+
+                        <!-- Connecting Lines -->
+                        <line x1="250" y1="250" x2="150" y2="150" stroke="#000" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="250" y1="250" x2="350" y2="150" stroke="#000" stroke-width="1"/>
+                        <line x1="250" y1="250" x2="350" y2="350" stroke="#000" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="250" y1="250" x2="250" y2="380" stroke="#000" stroke-width="1"/>
+
+                        <!-- Nodes -->
+                        <circle cx="150" cy="150" r="8" fill="#000"/>
+                        <circle cx="350" cy="150" r="8" fill="#000"/>
+                        <circle cx="350" cy="350" r="8" fill="#000"/>
+                        <circle cx="250" cy="380" r="8" fill="#000"/>
+                        <circle cx="250" cy="250" r="6" fill="#000"/>
+
+                        <!-- Labels -->
+                        <text x="140" y="135" font-size="12" font-weight="bold" fill="#000">사용자_A9</text>
+                        <text x="360" y="135" font-size="12" font-weight="bold" fill="#000">사용자_X2</text>
+                        <text x="355" y="365" font-size="12" font-weight="bold" fill="#000">중심_펄스</text>
+                        <text x="250" y="400" font-size="12" font-weight="bold" fill="#000">감정_04</text>
+
+                        <!-- Grid -->
+                        <g stroke="#ccc" stroke-width="0.5">
+                            <line x1="300" y1="150" x2="400" y2="150"/>
+                            <line x1="300" y1="160" x2="400" y2="160"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="discovery-panel">
+                <!-- Primary Overlap -->
+                <div class="panel-section overlap-section">
+                    <div class="overlap-value">84%</div>
+                    <div class="overlap-label">공통 취향</div>
+                    <div class="overlap-tags">깊은 우울감 / 미니멀리즘</div>
+                </div>
+
+                <!-- Taste Cluster Strength -->
+                <div class="panel-section">
+                    <div class="section-title">취향 클러스터 강도</div>
+                    <div class="pie-chart">
+                        <svg viewBox="0 0 100 100" class="pie-svg">
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#000" stroke-width="30" stroke-dasharray="75 100"/>
+                        </svg>
+                    </div>
+                    <div class="density-info">높은 밀도: (0045)</div>
+                </div>
+
+                <!-- Nodes Info -->
+                <div class="panel-section nodes-section">
+                    <div class="node-stat">
+                        <span class="node-label">노드</span>
+                        <span class="node-value">128</span>
+                    </div>
+                    <div class="node-stat">
+                        <span class="node-label">활성</span>
+                        <span class="node-value">42</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/discovery.js"></script>
+</body>
+</html>

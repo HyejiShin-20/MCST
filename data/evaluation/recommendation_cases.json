@@ -1,0 +1,65 @@
+[
+  {
+    "id": "presentation-shame-anxiety",
+    "text": "오늘 발표를 망쳐서 너무 창피하고 불안했다. 다시 자신감을 찾고 싶다.",
+    "per_type": 4,
+    "expected_roles": ["공감", "안정", "회복", "재도전"],
+    "required_components": ["emotion_regulation", "role_fit", "safety_score", "recovery_potential", "preference_penalty"],
+    "expected_any_topic": ["자존감", "진로", "회복"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "breakup-loss-recovery",
+    "text": "이별하고 나니 너무 허전하고 아무것도 하기 싫다. 그래도 오늘은 조금 괜찮아지고 싶다.",
+    "per_type": 4,
+    "expected_roles": ["공감", "안정", "회복", "전환"],
+    "required_components": ["emotion_regulation", "role_fit", "safety_score", "calm_fit", "preference_penalty"],
+    "expected_any_topic": ["이별", "관계", "회복", "공감"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "negative-relationship-hurt",
+    "text": "친구가 내 말을 무시해서 화났는데, 집에 와서는 내가 별로 중요한 사람이 아닌 것 같아서 울었다.",
+    "per_type": 3,
+    "expected_roles": ["공감", "안정", "회복"],
+    "required_components": ["emotion_regulation", "role_fit", "safety_score", "recovery_potential", "preference_penalty"],
+    "expected_any_topic": ["관계", "자존감", "회복", "공감"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "space-curiosity-growth",
+    "text": "우주비행사가 되고 싶어졌다. 별과 미래를 생각하니 설렌다.",
+    "per_type": 4,
+    "expected_roles": ["탐색", "학습", "몰입", "영감"],
+    "required_components": ["semantic_similarity", "role_fit", "emotion_regulation", "affect_alignment", "preference_penalty"],
+    "expected_any_topic": ["우주", "진로", "미래", "탐험"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "achievement-pride-savoring",
+    "text": "오늘 발표가 생각보다 잘 끝났다. 긴장했는데 끝나고 나니까 너무 뿌듯했다.",
+    "per_type": 4,
+    "expected_roles": ["축하", "음미", "안정", "영감"],
+    "required_components": ["affect_alignment", "role_fit", "emotion_regulation", "safety_score", "preference_penalty"],
+    "expected_any_topic": ["성취", "발표", "자존감", "성장"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "joy-fatigue-low-energy",
+    "text": "오늘 좋은 일이 있어서 기분은 좋은데 너무 피곤해서 아무것도 크게 하고 싶지는 않다.",
+    "per_type": 4,
+    "expected_roles": ["축하", "음미", "안정", "영감"],
+    "required_components": ["affect_alignment", "role_fit", "emotion_regulation", "safety_score", "preference_penalty"],
+    "expected_any_topic": ["성취", "회복", "일상", "휴식"],
+    "blocked_by_safety_max": 0
+  },
+  {
+    "id": "ordinary-home-maintenance",
+    "text": "오늘은 별일 없었다. 집에 와서 밥 먹고 씻고 그냥 누워 있었다.",
+    "per_type": 4,
+    "expected_roles": ["유지", "배경", "발견", "가벼운 성찰"],
+    "required_components": ["calm_fit", "cognitive_load_fit", "role_fit", "safety_score", "preference_penalty"],
+    "expected_any_topic": ["일상", "휴식", "집", "가족"],
+    "blocked_by_safety_max": 0
+  }
+]

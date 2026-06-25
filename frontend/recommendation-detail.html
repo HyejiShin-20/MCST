@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추천 상세 - 감정·문화 저널</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/recommendation-detail.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-title">◐ 감정·문화</div>
+        <nav>
+            <a href="index.html" class="active">일기</a>
+            <a href="archive.html">나의 기록</a>
+            <a href="discovery.html">분석</a>
+            <a href="repository.html">저장소</a>
+        </nav>
+    </header>
+
+    <!-- Navigation Bar -->
+    <div class="detail-nav-bar">
+        <a href="index.html" class="back-link">← 돌아가기</a>
+        <span class="rec-number">추천 #01</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="detail-container">
+        <!-- Left Column -->
+        <div class="detail-left">
+            <!-- Category Badge -->
+            <div class="category-badge">음악 / 영화</div>
+
+            <!-- Title -->
+            <h1 class="detail-title">인 더 무드 포 러브</h1>
+
+            <!-- Tags -->
+            <div class="detail-tags">
+                <span class="detail-tag">말하지 않은</span>
+                <span class="detail-tag">그리움</span>
+                <span class="detail-tag">리듬감</span>
+                <span class="detail-tag">도시 우울감</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-section">
+                <h2 class="section-heading">분석 & 개요</h2>
+                <p class="analysis-text">
+                    이 작품은 "실루엣 사이의 말하지 않은 긴장"에 초점을 맞춘 당신의 일기 항목과 공명합니다. 당신의 일기의 내적 독백처럼, 이 작품의 사운드트랙과 분위기는 말이 실패하는 공간에서 생동감 있습니다. 기다림의 리듬, 즉 의례로 변환된 평범한 행위의 기계적이면서도 시적인 반복을 포착합니다.
+                </p>
+                <p class="analysis-text">
+                    음악은 당신이 오후 8시 42분에 기록한 "빗 속에서 기다리는" 감정을 반영하며, 음성 노트에 설명된 그리움의 물리적 감각을 모방하는 촘촘한 현악 편성과 의도적인 느린 왈츠 템포를 활용합니다.
+                </p>
+            </div>
+
+            <!-- Creator Section -->
+            <div class="metadata-section">
+                <h3 class="metadata-label">제작자 / 출처</h3>
+                <div class="metadata-content">
+                    <div class="metadata-item">
+                        <div class="metadata-name">왕가웨이</div>
+                        <div class="metadata-subtitle">감독 / 우메바야시 시게루 (음악)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contextual Era Section -->
+            <div class="metadata-section">
+                <h3 class="metadata-label">시대 배경</h3>
+                <div class="metadata-content">
+                    <div class="metadata-item">
+                        <div class="metadata-name">홍콩, 1962년</div>
+                        <div class="metadata-subtitle">전후 현대성 / 디아스포라</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="detail-right">
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-container">
+                    <div class="preview-background"></div>
+                    <div class="preview-label">[ 미리보기 포함 ]<br>음성 웨이포인트 활성</div>
+                </div>
+            </div>
+
+            <!-- Match Score -->
+            <div class="match-section">
+                <h3 class="match-label">문화 연관성</h3>
+                <div class="match-score">94%</div>
+                <div class="match-bar">
+                    <div class="match-fill"></div>
+                </div>
+                <p class="match-description">
+                    언어 감정 분석(의미론) 및 입력의 리듬 운율로 결정된 연관성입니다.
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <button class="action-button action-button-primary">컬렉션에 저장</button>
+            <button class="action-button action-button-secondary">유사 찾기</button>
+            <button class="action-button action-button-secondary">컨텍스트 카드 내보내기</button>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/recommendation-detail.js"></script>
+</body>
+</html>

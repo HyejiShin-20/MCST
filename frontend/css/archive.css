@@ -1,0 +1,338 @@
+/* Archive Page Layout */
+.archive-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    padding: 30px 40px 0 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: calc(100vh - 80px);
+    overflow: hidden;
+}
+
+/* Left Sidebar */
+.archive-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    height: 100%;
+    overflow: hidden;
+    padding-right: 30px;
+    border-right: 1px solid #000;
+    position: relative;
+}
+
+.archive-sidebar::before {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -9999px;
+    height: calc(100vh + 9999px);
+    width: 1px;
+    background-color: #000;
+}
+
+.archive-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.archive-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.archive-sidebar::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 3px;
+}
+
+.temporal-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+.sidebar-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* Summary Section */
+.summary-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #000;
+}
+
+.summary-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.summary-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 4px;
+    border-bottom: 1px dotted #ccc;
+}
+
+.stat-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #000;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 900;
+    color: #000;
+}
+
+/* Refine Section */
+.refine-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.refine-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-btn {
+    padding: 8px 12px;
+    border: 1px solid #000;
+    background-color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-btn-active {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Footer Info */
+.archive-footer-info {
+    font-size: 8px;
+    line-height: 1.4;
+    color: #999;
+    padding-top: 20px;
+    border-top: 1px solid #000;
+    margin-top: auto;
+}
+
+/* Right Content Area */
+.archive-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.archive-content::before {
+    content: '';
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle, #ddd 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.archive-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.archive-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.archive-content::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 4px;
+}
+
+/* Content Header */
+.content-header {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #000;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #000;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    background-color: #f5f5f5;
+    margin: 0 -10px 0 0;
+    padding: 15px 10px;
+}
+
+.sort-label,
+.density-label,
+.duration-label {
+    white-space: nowrap;
+}
+
+/* Timeline Container */
+.timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Timeline Event */
+.timeline-event {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 20px;
+    align-items: flex-start;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #a0e7e5;
+    border: 1px solid #000;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.timeline-dot-yellow {
+    background-color: #ffd700;
+}
+
+/* Timeline Card */
+.timeline-card {
+    border: 1px solid #000;
+    padding: 15px;
+    background-color: #fff;
+}
+
+.card-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px 0;
+}
+
+.card-content {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #000;
+    padding: 4px 8px;
+    border: 1px solid #000;
+    background-color: #f5f5f5;
+    text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .archive-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .archive-sidebar {
+        height: auto;
+        overflow-y: visible;
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #000;
+        padding-bottom: 20px;
+    }
+
+    .archive-sidebar::before {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .archive-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .content-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
