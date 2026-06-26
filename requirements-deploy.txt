@@ -1,0 +1,18 @@
+# =========================================================
+# Render 배포용 경량 의존성
+# =========================================================
+# EMBEDDING_PROVIDER=openai + RETRIEVAL_BACKEND=memory 기준.
+# torch / sentence-transformers / transformers / chromadb / google-cloud-vision 는
+# 전부 "지연 임포트(lazy import)"라 위 설정에서는 런타임에 필요 없으므로 제외했다.
+# (빌드가 가벼워져 무료 티어 메모리/시간 제한에 안 걸림)
+#
+# 필요 시 풀버전:
+#  - 로컬 HuggingFace 임베딩 → requirements.txt 로 빌드 + EMBEDDING_PROVIDER=local
+#  - 이미지 OCR(google) → google-cloud-vision 추가 + 자격증명 설정
+fastapi>=0.137
+uvicorn>=0.38
+pydantic>=2.13
+python-multipart>=0.0.20
+numpy>=2.0
+openai>=2.0
+openpyxl>=3.1
