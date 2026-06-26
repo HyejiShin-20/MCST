@@ -40,6 +40,8 @@ class Database:
                         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT NOT NULL UNIQUE,
                         display_name TEXT NOT NULL,
+                        password_hash TEXT NOT NULL DEFAULT '',
+                        is_guest INTEGER NOT NULL DEFAULT 0,
                         created_at TEXT NOT NULL,
                         last_seen_at TEXT NOT NULL
                     );
@@ -240,20 +242,39 @@ class Database:
                 )
                 self._ensure_diary_entry_columns(connection)
                 self._ensure_content_item_columns(connection)
-                self._ensure_demo_user(connection)
+                self._ensure_user_columns(connection)
+                self._ensure_guest_user(connection)
         self.seed_content_if_empty()
         self.backfill_content_tagging_defaults()
 
     @staticmethod
-    def _ensure_demo_user(connection: sqlite3.Connection) -> None:
+    def _ensure_user_columns(connection: sqlite3.Connection) -> None:
+        existing = {
+            row["name"]
+            for row in connection.execute("PRAGMA table_info(users)").fetchall()
+        }
+        if "password_hash" not in existing:
+            connection.execute(
+                "ALTER TABLE users ADD COLUMN password_hash TEXT NOT NULL DEFAULT ''"
+            )
+        if "is_guest" not in existing:
+            connection.execute(
+                "ALTER TABLE users ADD COLUMN is_guest INTEGER NOT NULL DEFAULT 0"
+            )
+
+    @staticmethod
+    def _ensure_guest_user(connection: sqlite3.Connection) -> None:
+        # 체험(게스트) 전용 계정. 비밀번호 없이 '둘러보기' 버튼으로만 로그인된다.
+        # 데모 기본 진입을 없애기 위해 더 이상 'demo' 계정은 시드하지 않는다.
         now = now_iso()
         connection.execute(
             """
             INSERT OR IGNORE INTO users (
-                user_id, username, display_name, created_at, last_seen_at
-            ) VALUES (?, ?, ?, ?, ?)
+                user_id, username, display_name, password_hash, is_guest,
+                created_at, last_seen_at
+            ) VALUES (?, ?, ?, '', 1, ?, ?)
             """,
-            (config.DEFAULT_USER_ID, "demo", "Demo User", now, now),
+            (config.DEFAULT_USER_ID, "guest", "체험 계정", now, now),
         )
 
     def get_user(self, user_id: int) -> dict[str, Any] | None:
@@ -293,6 +314,60 @@ class Database:
                     (username,),
                 ).fetchone()
         return dict(row)
+
+    def create_user(
+        self, username: str, display_name: str, password_hash: str
+    ) -> dict[str, Any] | None:
+        """새 사용자를 생성한다. 아이디가 이미 있으면 None을 반환한다."""
+        username = username.strip()
+        display_name = display_name.strip() or username
+        now = now_iso()
+        with closing(self.connect()) as connection:
+            with connection:
+                cursor = connection.execute(
+                    """
+                    INSERT OR IGNORE INTO users (
+                        username, display_name, password_hash, is_guest,
+                        created_at, last_seen_at
+                    ) VALUES (?, ?, ?, 0, ?, ?)
+                    """,
+                    (username, display_name, password_hash, now, now),
+                )
+                if cursor.rowcount == 0:
+                    return None
+                row = connection.execute(
+                    "SELECT * FROM users WHERE username = ?",
+                    (username,),
+                ).fetchone()
+        return dict(row)
+
+    def ensure_guest_user(self) -> dict[str, Any]:
+        """체험(게스트) 계정을 보장하고 반환한다."""
+        now = now_iso()
+        with closing(self.connect()) as connection:
+            with connection:
+                connection.execute(
+                    """
+                    INSERT INTO users (username, display_name, password_hash, is_guest, created_at, last_seen_at)
+                    VALUES ('guest', '체험 계정', '', 1, ?, ?)
+                    ON CONFLICT(username) DO UPDATE SET last_seen_at = excluded.last_seen_at
+                    """,
+                    (now, now),
+                )
+                row = connection.execute(
+                    "SELECT * FROM users WHERE username = 'guest'",
+                ).fetchone()
+        return dict(row)
+
+    def delete_user(self, user_id: int) -> bool:
+        """사용자 데이터와 계정을 모두 삭제한다."""
+        self.delete_user_data(user_id)
+        with closing(self.connect()) as connection:
+            with connection:
+                cursor = connection.execute(
+                    "DELETE FROM users WHERE user_id = ?", (user_id,)
+                )
+                return cursor.rowcount > 0
 
     def touch_user(self, user_id: int) -> None:
         with closing(self.connect()) as connection:

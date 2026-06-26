@@ -170,7 +170,8 @@ function setupFilters() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (!window.EmotionSession?.requireAuth?.()) return;
     setupFilters();
-    window.EmotionSession?.bindUserPanel?.(() => loadRepository());
+    window.EmotionSession?.bindUserPanel?.();
     window.EmotionSession?.ensureUser?.().finally(loadRepository);
 });

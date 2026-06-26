@@ -99,6 +99,7 @@ async function loadTasteAnalysis() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    window.EmotionSession?.bindUserPanel?.(() => loadTasteAnalysis());
+    if (!window.EmotionSession?.requireAuth?.()) return;
+    window.EmotionSession?.bindUserPanel?.();
     window.EmotionSession?.ensureUser?.().finally(loadTasteAnalysis);
 });

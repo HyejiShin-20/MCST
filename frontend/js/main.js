@@ -630,15 +630,15 @@ function restoreLastRun() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (!window.EmotionSession?.requireAuth?.()) return;
+
     const audioInput = document.getElementById('audioInput');
     const photoInput = document.getElementById('photoInput');
     const linkInput = document.getElementById('linkInput');
     const transcriptionText = document.getElementById('transcriptionText');
     const diaryTextarea = document.querySelector('.daily-entry-textarea');
 
-    window.EmotionSession?.bindUserPanel?.(() => {
-        window.EmotionSession?.ensureUser?.();
-    });
+    window.EmotionSession?.bindUserPanel?.();
     window.EmotionSession?.ensureUser?.();
     audioInput?.addEventListener('change', () => uploadMedia('audio', audioInput));
     photoInput?.addEventListener('change', () => uploadMedia('image', photoInput));

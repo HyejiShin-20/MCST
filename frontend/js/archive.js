@@ -120,6 +120,7 @@ async function loadArchive() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    window.EmotionSession?.bindUserPanel?.(() => loadArchive());
+    if (!window.EmotionSession?.requireAuth?.()) return;
+    window.EmotionSession?.bindUserPanel?.();
     window.EmotionSession?.ensureUser?.().finally(loadArchive);
 });

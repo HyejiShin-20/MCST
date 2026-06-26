@@ -5,6 +5,7 @@ from collections import Counter
 from typing import Any
 
 from app import config
+from app import security
 from app.database import Database
 from app.services.analyzer import EmotionAnalyzer
 from app.services.memory_service import MemoryService
@@ -57,20 +58,90 @@ class BackendController:
             "transcription_review_required": config.TRANSCRIPTION_REVIEW_REQUIRED,
         }
 
+    @staticmethod
+    def _public_user(user: dict[str, Any]) -> dict[str, Any]:
+        """클라이언트로 내보낼 사용자 정보(비밀번호 해시 제거)."""
+        return {
+            "user_id": user.get("user_id"),
+            "username": user.get("username"),
+            "display_name": user.get("display_name"),
+            "is_guest": bool(user.get("is_guest") or 0),
+        }
+
     def login_or_create_user(self, payload: dict[str, Any]) -> dict[str, Any]:
-        username = normalize_text(str(payload.get("username") or "demo"))
+        # 레거시 엔드포인트 (비밀번호 없는 단순 로그인/생성). 일반 가입은 register_user 사용.
+        username = normalize_text(str(payload.get("username") or "guest"))
         display_name = normalize_text(str(payload.get("display_name") or username))
         if not username:
             raise ApiError(400, "username is required")
         user = self.database.login_or_create_user(username, display_name)
-        return {"user": user}
+        return {"user": self._public_user(user)}
+
+    def register_user(self, payload: dict[str, Any]) -> dict[str, Any]:
+        username = normalize_text(str(payload.get("username") or ""))
+        name = normalize_text(str(payload.get("name") or payload.get("display_name") or ""))
+        password = str(payload.get("password") or "")
+        password_confirm = str(
+            payload.get("password_confirm")
+            if payload.get("password_confirm") is not None
+            else payload.get("passwordConfirm") or ""
+        )
+
+        if not username:
+            raise ApiError(400, "아이디를 입력해 주세요.")
+        if len(username) < 4:
+            raise ApiError(400, "아이디는 4자 이상이어야 합니다.")
+        if len(username) > 20:
+            raise ApiError(400, "아이디는 20자 이하여야 합니다.")
+        if not all(character.isalnum() or character in {"_", "."} for character in username):
+            raise ApiError(400, "아이디는 영문, 숫자, '_', '.' 만 사용할 수 있습니다.")
+        if not name:
+            raise ApiError(400, "이름을 입력해 주세요.")
+        if password != password_confirm:
+            raise ApiError(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+
+        strength_error = security.validate_password_strength(password)
+        if strength_error:
+            raise ApiError(400, strength_error)
+
+        if self.database.get_user_by_username(username):
+            raise ApiError(409, "이미 사용 중인 아이디입니다.")
+
+        password_hash = security.hash_password(password)
+        user = self.database.create_user(username, name, password_hash)
+        if not user:
+            # 동시 가입 경쟁 등으로 INSERT 가 무시된 경우
+            raise ApiError(409, "이미 사용 중인 아이디입니다.")
+        return {"user": self._public_user(user)}
+
+    def login_user(self, payload: dict[str, Any]) -> dict[str, Any]:
+        username = normalize_text(str(payload.get("username") or ""))
+        password = str(payload.get("password") or "")
+        if not username or not password:
+            raise ApiError(400, "아이디와 비밀번호를 입력해 주세요.")
+        user = self.database.get_user_by_username(username)
+        if not user or not security.verify_password(password, user.get("password_hash") or ""):
+            raise ApiError(401, "아이디 또는 비밀번호가 올바르지 않습니다.")
+        self.database.touch_user(int(user["user_id"]))
+        return {"user": self._public_user(user)}
+
+    def guest_login(self) -> dict[str, Any]:
+        user = self.database.ensure_guest_user()
+        return {"user": self._public_user(user)}
+
+    def check_username(self, username: str) -> dict[str, Any]:
+        username = normalize_text(str(username or ""))
+        if not username:
+            raise ApiError(400, "아이디를 입력해 주세요.")
+        exists = self.database.get_user_by_username(username) is not None
+        return {"username": username, "available": not exists}
 
     def get_user(self, user_id: int) -> dict[str, Any]:
         user = self.database.get_user(user_id)
         if not user:
             raise ApiError(404, "user not found")
         self.database.touch_user(user_id)
-        return {"user": user}
+        return {"user": self._public_user(user)}
 
     def create_diary(self, payload: dict[str, Any]) -> dict[str, Any]:
         user_id = int(payload.get("user_id") or config.DEFAULT_USER_ID)

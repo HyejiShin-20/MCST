@@ -119,6 +119,7 @@ async function saveRecommendation(rec, button) {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+    if (!window.EmotionSession?.requireAuth?.()) return;
     const backLink = document.querySelector('.back-link');
     if (backLink) {
         backLink.addEventListener('click', function(e) {

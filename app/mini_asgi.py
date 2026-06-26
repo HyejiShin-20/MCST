@@ -70,6 +70,14 @@ class MiniASGI:
         content_match = re.fullmatch(r"/api/content/(.+)", path)
         if method == "GET" and content_match:
             return 200, self.controller.get_content(content_match.group(1))
+        if method == "POST" and path == "/api/auth/register":
+            return 200, self.controller.register_user(body)
+        if method == "POST" and path == "/api/auth/login":
+            return 200, self.controller.login_user(body)
+        if method == "POST" and path == "/api/auth/guest":
+            return 200, self.controller.guest_login()
+        if method == "GET" and path == "/api/auth/check-username":
+            return 200, self.controller.check_username(self._first(query, "username") or "")
         if method in {"POST"} and path in {"/api/users", "/api/users/login"}:
             return 200, self.controller.login_or_create_user(body)
         user_match = re.fullmatch(r"/api/users/(\d+)", path)

@@ -2,29 +2,47 @@ const EmotionSession = (() => {
     const API_BASE = window.EMOTION_API_BASE || 'http://127.0.0.1:8000';
     const USER_KEY = 'emotionCultureUser';
     const LAST_RUN_KEY = 'emotionCultureLastRun';
-    const DEFAULT_USER = { user_id: 1, username: 'demo', display_name: 'Demo User' };
+    const LOGIN_PAGE = 'login.html';
 
     function currentUser() {
         try {
-            return JSON.parse(localStorage.getItem(USER_KEY) || '') || DEFAULT_USER;
+            const raw = localStorage.getItem(USER_KEY);
+            if (!raw) return null;
+            const user = JSON.parse(raw);
+            return user && user.user_id ? user : null;
         } catch {
-            return DEFAULT_USER;
+            return null;
         }
     }
 
     function currentUserId() {
-        return Number(currentUser().user_id || 1);
+        const user = currentUser();
+        return user ? Number(user.user_id) : null;
+    }
+
+    function isAuthenticated() {
+        return Boolean(currentUser());
     }
 
     function setUser(user) {
         const next = {
-            user_id: Number(user.user_id || 1),
-            username: user.username || 'demo',
-            display_name: user.display_name || user.username || 'Demo User'
+            user_id: Number(user.user_id),
+            username: user.username || '',
+            display_name: user.display_name || user.username || '',
+            is_guest: Boolean(user.is_guest)
         };
         localStorage.setItem(USER_KEY, JSON.stringify(next));
         updateUserLabels(next);
         return next;
+    }
+
+    function clearUser() {
+        localStorage.removeItem(USER_KEY);
+        try {
+            localStorage.removeItem(LAST_RUN_KEY);
+        } catch {
+            // ignore
+        }
     }
 
     async function requestJson(path, options = {}) {
@@ -48,58 +66,105 @@ const EmotionSession = (() => {
         return response.json();
     }
 
-    async function login(username, displayName = '') {
-        const response = await requestJson('/api/users', {
+    async function register({ username, password, passwordConfirm, name }) {
+        const response = await requestJson('/api/auth/register', {
             method: 'POST',
             body: JSON.stringify({
-                username: String(username || '').trim() || 'demo',
-                display_name: String(displayName || '').trim()
+                username: String(username || '').trim(),
+                password: String(password || ''),
+                password_confirm: String(passwordConfirm || ''),
+                name: String(name || '').trim()
             })
         });
         return setUser(response.user);
     }
 
+    async function login(username, password) {
+        const response = await requestJson('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: String(username || '').trim(),
+                password: String(password || '')
+            })
+        });
+        return setUser(response.user);
+    }
+
+    async function guestLogin() {
+        const response = await requestJson('/api/auth/guest', {
+            method: 'POST',
+            body: '{}'
+        });
+        return setUser(response.user);
+    }
+
+    async function checkUsername(username) {
+        const response = await requestJson(
+            `/api/auth/check-username?username=${encodeURIComponent(String(username || '').trim())}`
+        );
+        return Boolean(response.available);
+    }
+
+    function redirectToLogin() {
+        if (!window.location.pathname.endsWith(LOGIN_PAGE)) {
+            window.location.href = LOGIN_PAGE;
+        }
+    }
+
+    function logout() {
+        clearUser();
+        redirectToLogin();
+    }
+
+    function requireAuth() {
+        if (!isAuthenticated()) {
+            redirectToLogin();
+            return false;
+        }
+        return true;
+    }
+
     async function ensureUser() {
         const user = currentUser();
+        if (!user) {
+            redirectToLogin();
+            return null;
+        }
+        updateUserLabels(user);
         try {
             const response = await requestJson(`/api/users/${user.user_id}`);
             return setUser(response.user);
         } catch {
-            return login(user.username || 'demo', user.display_name || '');
+            // 서버 일시 오류 등에는 캐시된 세션을 유지한다 (데모로 되돌아가지 않음).
+            return user;
         }
     }
 
     function updateUserLabels(user = currentUser()) {
+        const name = user ? (user.display_name || user.username || '') : '';
         document.querySelectorAll('[data-current-user]').forEach((node) => {
-            node.textContent = user.display_name || user.username || 'Demo User';
-        });
-        document.querySelectorAll('[data-user-input]').forEach((node) => {
-            if (!node.value) node.value = user.username || 'demo';
+            node.textContent = name || '게스트';
         });
     }
 
-    function bindUserPanel(onChange) {
+    function bindUserPanel() {
         updateUserLabels();
-        document.querySelectorAll('[data-user-login]').forEach((button) => {
-            button.addEventListener('click', async () => {
-                const panel = button.closest('[data-user-panel]') || document;
-                const input = panel.querySelector('[data-user-input]');
-                const username = input?.value?.trim() || 'demo';
-                button.disabled = true;
-                try {
-                    const user = await login(username, username);
-                    if (typeof onChange === 'function') onChange(user);
-                } finally {
-                    button.disabled = false;
-                }
+        document.querySelectorAll('[data-logout]').forEach((button) => {
+            if (button.dataset.logoutBound) return;
+            button.dataset.logoutBound = '1';
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                logout();
             });
         });
     }
 
     function saveLastRun(payload) {
+        const userId = currentUserId();
+        if (!userId) return;
         localStorage.setItem(LAST_RUN_KEY, JSON.stringify({
             ...payload,
-            user_id: currentUserId(),
+            user_id: userId,
             saved_at: new Date().toISOString()
         }));
     }
@@ -117,11 +182,19 @@ const EmotionSession = (() => {
         API_BASE,
         currentUser,
         currentUserId,
+        isAuthenticated,
         setUser,
+        clearUser,
         requestJson,
+        register,
         login,
+        guestLogin,
+        checkUsername,
+        logout,
+        requireAuth,
         ensureUser,
         bindUserPanel,
+        updateUserLabels,
         saveLastRun,
         loadLastRun
     };

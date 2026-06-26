@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 · 감정·문화 저널</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-shell">
+        <div class="auth-brand">◐ 감정·문화</div>
+        <p class="auth-subtitle">감정·일상 기반 문화 콘텐츠 추천</p>
+
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab auth-tab-active" data-tab="login">로그인</button>
+                <button type="button" class="auth-tab" data-tab="register">회원가입</button>
+            </div>
+
+            <!-- 로그인 폼 -->
+            <form class="auth-form" id="loginForm">
+                <label class="auth-field">
+                    <span class="auth-field-label">아이디</span>
+                    <input type="text" id="loginUsername" autocomplete="username" placeholder="아이디" required>
+                </label>
+                <label class="auth-field">
+                    <span class="auth-field-label">비밀번호</span>
+                    <input type="password" id="loginPassword" autocomplete="current-password" placeholder="비밀번호" required>
+                </label>
+                <div class="auth-message" id="loginMessage" aria-live="polite"></div>
+                <button type="submit" class="auth-submit" id="loginSubmit">로그인</button>
+            </form>
+
+            <!-- 회원가입 폼 -->
+            <form class="auth-form" id="registerForm" hidden>
+                <label class="auth-field">
+                    <span class="auth-field-label">아이디</span>
+                    <input type="text" id="registerUsername" autocomplete="username" placeholder="4~20자 영문/숫자" required>
+                    <span class="auth-hint" id="usernameHint"></span>
+                </label>
+                <label class="auth-field">
+                    <span class="auth-field-label">이름</span>
+                    <input type="text" id="registerName" autocomplete="name" placeholder="표시될 이름" required>
+                </label>
+                <label class="auth-field">
+                    <span class="auth-field-label">비밀번호</span>
+                    <input type="password" id="registerPassword" autocomplete="new-password" placeholder="비밀번호" required>
+                    <span class="auth-hint">8자 이상, 영문·숫자·기호 중 2가지 이상 조합</span>
+                </label>
+                <label class="auth-field">
+                    <span class="auth-field-label">비밀번호 확인</span>
+                    <input type="password" id="registerPasswordConfirm" autocomplete="new-password" placeholder="비밀번호 확인" required>
+                    <span class="auth-hint" id="confirmHint"></span>
+                </label>
+                <div class="auth-message" id="registerMessage" aria-live="polite"></div>
+                <button type="submit" class="auth-submit" id="registerSubmit">회원가입</button>
+            </form>
+
+            <div class="auth-divider"><span>또는</span></div>
+            <button type="button" class="auth-guest" id="guestButton">로그인 없이 둘러보기 (체험)</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

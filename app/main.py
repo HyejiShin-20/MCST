@@ -59,8 +59,18 @@ try:
         return_recommendations: bool = True
 
     class UserRequest(BaseModel):
-        username: str = "demo"
+        username: str = "guest"
         display_name: str = ""
+
+    class RegisterRequest(BaseModel):
+        username: str
+        password: str
+        password_confirm: str = ""
+        name: str = ""
+
+    class LoginRequest(BaseModel):
+        username: str
+        password: str
 
     class RepositorySaveRequest(BaseModel):
         user_id: int = 1
@@ -113,6 +123,22 @@ try:
     @app.get("/api/health")
     def health() -> dict[str, Any]:
         return controller.health()
+
+    @app.post("/api/auth/register")
+    def register(payload: RegisterRequest) -> dict[str, Any]:
+        return handle(lambda: controller.register_user(payload.model_dump()))
+
+    @app.post("/api/auth/login")
+    def auth_login(payload: LoginRequest) -> dict[str, Any]:
+        return handle(lambda: controller.login_user(payload.model_dump()))
+
+    @app.post("/api/auth/guest")
+    def auth_guest() -> dict[str, Any]:
+        return handle(lambda: controller.guest_login())
+
+    @app.get("/api/auth/check-username")
+    def check_username(username: str = Query(...)) -> dict[str, Any]:
+        return handle(lambda: controller.check_username(username))
 
     @app.post("/api/users")
     def login_or_create_user(payload: UserRequest) -> dict[str, Any]:

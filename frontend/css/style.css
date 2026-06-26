@@ -459,13 +459,19 @@ input[type="file"] {
 
 .user-panel {
     display: grid;
-    grid-template-columns: auto minmax(80px, 1fr) auto auto;
+    grid-template-columns: auto 1fr auto;
     gap: 6px;
     align-items: center;
     border: 1px solid #000;
     background-color: #fff;
     padding: 8px;
     margin-bottom: 10px;
+}
+
+.current-user {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .user-label,
@@ -528,6 +534,198 @@ input[type="file"] {
 .discovery-sidebar .user-button,
 .discovery-sidebar .current-user {
     width: 100%;
+}
+
+/* ===== 인증(로그인/회원가입) 페이지 ===== */
+.auth-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f5f5f5;
+}
+
+.auth-shell {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+}
+
+.auth-brand {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.auth-subtitle {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 1px;
+    margin-top: 6px;
+    margin-bottom: 22px;
+}
+
+.auth-card {
+    border: 1px solid #000;
+    background-color: #fff;
+    padding: 0;
+    text-align: left;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.auth-tab {
+    border: none;
+    border-bottom: 1px solid #000;
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 14px 0;
+}
+
+.auth-tab:first-child {
+    border-right: 1px solid #000;
+}
+
+.auth-tab-active {
+    background-color: #fff;
+    color: #000;
+    border-bottom-color: transparent;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px 22px 8px 22px;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.auth-field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.auth-field input {
+    border: 1px solid #000;
+    padding: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.auth-field input:focus {
+    outline: 2px solid #000;
+    outline-offset: -1px;
+}
+
+.auth-hint {
+    font-size: 11px;
+    color: #888;
+    min-height: 14px;
+}
+
+.auth-hint-ok {
+    color: #1a7f37;
+}
+
+.auth-hint-error {
+    color: #b00020;
+}
+
+.auth-message {
+    font-size: 12px;
+    min-height: 16px;
+}
+
+.auth-message-error {
+    color: #b00020;
+}
+
+.auth-message-ok {
+    color: #1a7f37;
+}
+
+.auth-submit {
+    border: 1px solid #000;
+    background-color: #000;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 12px;
+    margin-top: 4px;
+}
+
+.auth-submit:hover {
+    background-color: #333;
+}
+
+.auth-submit:disabled {
+    cursor: default;
+    background-color: #999;
+    border-color: #999;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 22px;
+    color: #999;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.auth-guest {
+    display: block;
+    width: calc(100% - 44px);
+    margin: 4px 22px 22px 22px;
+    border: 1px solid #000;
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 11px;
+}
+
+.auth-guest:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.auth-guest:disabled {
+    cursor: default;
+    color: #666;
+    background-color: #eee;
 }
 
 .rec-footer {
