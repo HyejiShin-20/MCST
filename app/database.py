@@ -429,6 +429,21 @@ class Database:
                     items = json.loads(raw_seed)
                 for item in items:
                     embedding_text = self.embedding_text(item)
+                    # 'tags'(LLM 재태깅 결과)가 있으면 그 값을 그대로 시드한다.
+                    # 없으면 기존 키워드 시드 동작(고정 0.82)으로 폴백한다.
+                    tags = item.get("tags") if isinstance(item.get("tags"), dict) else None
+                    if tags:
+                        seed_emotion = tags.get("emotion_tags") or item["emotion_tags"]
+                        seed_theme = tags.get("theme_tags") or item["topic_tags"]
+                        seed_confidence = float(tags.get("tag_confidence", 0.82))
+                        seed_recommendable = int(bool(tags.get("is_recommendable", True)))
+                        seed_version = tags.get("tag_version") or config.CURRENT_TAG_VERSION
+                    else:
+                        seed_emotion = item["emotion_tags"]
+                        seed_theme = item["topic_tags"]
+                        seed_confidence = 0.82
+                        seed_recommendable = 1
+                        seed_version = config.CURRENT_TAG_VERSION
                     cursor = connection.execute(
                         """
                         INSERT OR IGNORE INTO content_items (
@@ -447,21 +462,24 @@ class Database:
                             item["genre"],
                             item["summary"],
                             item["source"],
-                            json.dumps(item["emotion_tags"], ensure_ascii=False),
-                            json.dumps(item["topic_tags"], ensure_ascii=False),
+                            json.dumps(seed_emotion, ensure_ascii=False),
+                            json.dumps(seed_theme, ensure_ascii=False),
                             embedding_text,
                             item["summary"],
                             item["summary"],
                             embedding_text,
                             "tagged",
-                            config.CURRENT_TAG_VERSION,
-                            0.82,
-                            1,
+                            seed_version,
+                            seed_confidence,
+                            seed_recommendable,
                             str(stable_hash(embedding_text)),
                         ),
                     )
                     if cursor.rowcount:
-                        self._upsert_seed_content_tags(connection, item, embedding_text)
+                        if tags:
+                            self._upsert_full_content_tags(connection, item["content_id"], tags)
+                        else:
+                            self._upsert_seed_content_tags(connection, item, embedding_text)
 
     @staticmethod
     def _upsert_seed_content_tags(
@@ -505,6 +523,63 @@ class Database:
                 int(bool(set(item["emotion_tags"]) & {"우울", "절망", "비극", "고립"})),
                 int(bool(set(item["emotion_tags"]) & {"비극", "분노"})),
                 int(bool(set(item["emotion_tags"]) & {"평온", "위로", "따뜻함"})),
+                now,
+                now,
+            ),
+        )
+
+    @staticmethod
+    def _upsert_full_content_tags(
+        connection: sqlite3.Connection, content_id: str, tags: dict[str, Any]
+    ) -> None:
+        """LLM 재태깅 결과(무드/역할/valence 등 전체)를 content_tags 에 시드한다."""
+        now = now_iso()
+        emotion_tags = tags.get("emotion_tags") or []
+        theme_tags = tags.get("theme_tags") or []
+        mood_tags = tags.get("mood_tags") or []
+        roles = tags.get("recommendation_roles") or []
+        final_result = {
+            "emotion_tags": emotion_tags,
+            "theme_tags": theme_tags,
+            "mood_tags": mood_tags,
+            "recommendation_roles": roles,
+            "valence": tags.get("valence", 0.0),
+            "arousal": tags.get("arousal", 0.35),
+            "intensity": tags.get("intensity", 0.4),
+            "energy": tags.get("energy", 0.45),
+            "cognitive_load": tags.get("cognitive_load", 0.45),
+            "tag_confidence": tags.get("tag_confidence", 0.7),
+        }
+        connection.execute(
+            """
+            INSERT OR REPLACE INTO content_tags (
+                content_id, tag_version, tag_method,
+                emotion_tags_json, theme_tags_json, mood_tags_json, recommendation_roles_json,
+                valence, arousal, intensity, energy, cognitive_load, tag_confidence,
+                raw_tag_result_json, final_tag_result_json,
+                dark_flag, too_heavy_flag, background_friendly,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                content_id,
+                tags.get("tag_version") or config.CURRENT_TAG_VERSION,
+                tags.get("tag_method") or "llm_vocab_v1",
+                json.dumps(emotion_tags, ensure_ascii=False),
+                json.dumps(theme_tags, ensure_ascii=False),
+                json.dumps(mood_tags, ensure_ascii=False),
+                json.dumps(roles, ensure_ascii=False),
+                float(tags.get("valence", 0.0)),
+                float(tags.get("arousal", 0.35)),
+                float(tags.get("intensity", 0.4)),
+                float(tags.get("energy", 0.45)),
+                float(tags.get("cognitive_load", 0.45)),
+                float(tags.get("tag_confidence", 0.7)),
+                json.dumps(final_result, ensure_ascii=False),
+                json.dumps(final_result, ensure_ascii=False),
+                int(bool(tags.get("dark_flag", False))),
+                int(bool(tags.get("too_heavy_flag", False))),
+                int(bool(tags.get("background_friendly", False))),
                 now,
                 now,
             ),
