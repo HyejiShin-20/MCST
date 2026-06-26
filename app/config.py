@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 import os
+import tempfile
 from pathlib import Path
 
 
@@ -27,6 +29,42 @@ _load_env_file()
 DATA_DIR = BASE_DIR / "data"
 SAMPLE_DIR = DATA_DIR / "samples"
 DB_PATH = Path(os.getenv("APP_DB_PATH", DATA_DIR / "app.sqlite3"))
+
+
+def _configure_google_application_credentials() -> None:
+    if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        return
+
+    raw_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON", "").strip()
+    raw_b64 = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_B64", "").strip()
+    if not raw_json and not raw_b64:
+        return
+
+    try:
+        content = (
+            base64.b64decode(raw_b64).decode("utf-8")
+            if raw_b64
+            else raw_json
+        )
+    except Exception:
+        return
+    if not content:
+        return
+
+    secret_dir = Path(os.getenv("GOOGLE_CREDENTIALS_TMP_DIR", tempfile.gettempdir()))
+    secret_dir.mkdir(parents=True, exist_ok=True)
+    credential_path = secret_dir / "google-application-credentials.json"
+    credential_path.write_text(content, encoding="utf-8")
+    try:
+        credential_path.chmod(0o600)
+    except OSError:
+        pass
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(credential_path)
+
+
+_configure_google_application_credentials()
+
+
 def _resolve_sample_content_path() -> Path:
     # 상대 경로 환경변수도 항상 프로젝트 루트(BASE_DIR) 기준으로 풀어
     # 배포 환경의 작업 디렉토리(CWD)와 무관하게 동작하도록 한다.

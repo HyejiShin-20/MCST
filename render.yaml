@@ -37,3 +37,18 @@ services:
       # --- 시크릿: Render 대시보드에서 직접 입력 (레포에 올리지 않음) ---
       - key: OPENAI_API_KEY
         sync: false
+      - key: OCR_PROVIDER
+        value: google
+      - key: GOOGLE_CLOUD_PROJECT
+        value: mcst-500412
+      - key: GOOGLE_VISION_FEATURE
+        value: DOCUMENT_TEXT_DETECTION
+      - key: GOOGLE_VISION_LANGUAGE_HINTS
+        value: ko,en
+      # Paste the Google service account JSON as a secret value in Render.
+      # Prefer GOOGLE_APPLICATION_CREDENTIALS_B64 when the dashboard has trouble
+      # preserving JSON quotes/newlines.
+      - key: GOOGLE_APPLICATION_CREDENTIALS_JSON
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS_B64
+        sync: false
