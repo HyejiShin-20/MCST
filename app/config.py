@@ -27,9 +27,17 @@ _load_env_file()
 DATA_DIR = BASE_DIR / "data"
 SAMPLE_DIR = DATA_DIR / "samples"
 DB_PATH = Path(os.getenv("APP_DB_PATH", DATA_DIR / "app.sqlite3"))
-SAMPLE_CONTENT_PATH = Path(
-    os.getenv("SAMPLE_CONTENT_PATH", SAMPLE_DIR / "content_items.json")
-)
+def _resolve_sample_content_path() -> Path:
+    # 상대 경로 환경변수도 항상 프로젝트 루트(BASE_DIR) 기준으로 풀어
+    # 배포 환경의 작업 디렉토리(CWD)와 무관하게 동작하도록 한다.
+    raw = os.getenv("SAMPLE_CONTENT_PATH")
+    if not raw:
+        return SAMPLE_DIR / "content_items.json"
+    candidate = Path(raw)
+    return candidate if candidate.is_absolute() else (BASE_DIR / candidate)
+
+
+SAMPLE_CONTENT_PATH = _resolve_sample_content_path()
 
 HF_EMBEDDING_MODEL = os.getenv(
     "HF_EMBEDDING_MODEL",
@@ -43,17 +51,19 @@ HF_LOCAL_FILES_ONLY = os.getenv("HF_LOCAL_FILES_ONLY", "true").lower() not in {
 }
 EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "local").lower()
 OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+# OpenAI 임베딩 호출 1회당 최대 입력 개수. 대량 카탈로그를 안전하게 배치 처리한다.
+OPENAI_EMBEDDING_BATCH_SIZE = int(os.getenv("OPENAI_EMBEDDING_BATCH_SIZE", "128"))
 
 DEFAULT_USER_ID = int(os.getenv("DEFAULT_USER_ID", "1"))
 DEFAULT_PER_TYPE = int(os.getenv("DEFAULT_PER_TYPE", "4"))
 MAX_PER_TYPE = int(os.getenv("MAX_PER_TYPE", "4"))
 DEFAULT_CONTENT_TYPES = [
     item.strip()
-    for item in os.getenv("DEFAULT_CONTENT_TYPES", "music,book").split(",")
+    for item in os.getenv("DEFAULT_CONTENT_TYPES", "music,book,movie").split(",")
     if item.strip() in {"movie", "music", "book"}
 ]
 if not DEFAULT_CONTENT_TYPES:
-    DEFAULT_CONTENT_TYPES = ["music", "book"]
+    DEFAULT_CONTENT_TYPES = ["music", "book", "movie"]
 HIDE_SAMPLE_CONTENT_IN_DEMO = os.getenv(
     "HIDE_SAMPLE_CONTENT_IN_DEMO",
     "true",

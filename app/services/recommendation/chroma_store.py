@@ -6,7 +6,7 @@ from typing import Any
 
 from app import config
 from app.services.embedding_service import EmbeddingService
-from app.services.text_utils import stable_hash
+from app.services.text_utils import stable_hash, tokenize, weighted_overlap
 
 
 @dataclass
@@ -54,7 +54,7 @@ class ChromaCandidateStore:
         selected = [by_id[content_id] for content_id in ids if content_id in by_id]
         if not selected:
             selected = contents
-        selected = self._backfill_missing_types(selected, contents)
+        selected = self._backfill_missing_types(selected, contents, query_text)
         return ChromaSearchResult(
             selected,
             {
@@ -72,8 +72,11 @@ class ChromaCandidateStore:
     def _backfill_missing_types(
         selected: list[dict[str, Any]],
         contents: list[dict[str, Any]],
+        query_text: str,
     ) -> list[dict[str, Any]]:
         target_count = max(config.MAX_PER_TYPE * 6, config.DEFAULT_PER_TYPE * 6)
+        query_tokens = tokenize(query_text)
+        query_lower = query_text.lower()
         selected_ids = {str(content["content_id"]) for content in selected}
         balanced = selected[:]
         content_types = sorted({str(content.get("content_type", "")) for content in contents})
@@ -81,7 +84,7 @@ class ChromaCandidateStore:
             current_count = sum(
                 1 for content in balanced if content.get("content_type") == content_type
             )
-            if current_count >= min(config.DEFAULT_PER_TYPE, target_count):
+            if current_count >= target_count:
                 continue
             pool = [
                 content
@@ -89,11 +92,52 @@ class ChromaCandidateStore:
                 if content.get("content_type") == content_type
                 and str(content["content_id"]) not in selected_ids
             ]
-            needed = min(target_count, len(pool))
-            for content in pool[:needed]:
+            ranked_pool = sorted(
+                pool,
+                key=lambda content: ChromaCandidateStore._backfill_score(
+                    content, query_tokens, query_lower
+                ),
+                reverse=True,
+            )
+            needed = min(target_count - current_count, len(ranked_pool))
+            for content in ranked_pool[:needed]:
                 balanced.append(content)
                 selected_ids.add(str(content["content_id"]))
         return balanced
+
+    @staticmethod
+    def _backfill_score(
+        content: dict[str, Any],
+        query_tokens: list[str],
+        query_lower: str,
+    ) -> float:
+        tags = (
+            list(content.get("emotion_tags") or [])
+            + list(content.get("topic_tags") or [])
+            + list(content.get("mood_tags") or [])
+            + list(content.get("recommendation_roles") or [])
+        )
+        fields = [
+            str(content.get("title", "")),
+            str(content.get("genre", "")),
+            str(content.get("summary", ""))[:700],
+            " ".join(str(tag) for tag in tags),
+        ]
+        search_text = " ".join(fields)
+        score = weighted_overlap(query_tokens, tokenize(search_text))
+        for tag in tags:
+            tag_text = str(tag).strip().lower()
+            if tag_text and tag_text in query_lower:
+                score += 0.18
+        genre = str(content.get("genre", "")).lower()
+        if any(cue in query_lower for cue in ["우주", "과학", "천문", "sf"]):
+            if any(cue.lower() in search_text.lower() for cue in ["우주", "과학", "SF", "미래"]):
+                score += 0.35
+        if "코미디" in query_lower and "코미디" in genre:
+            score += 0.25
+        if "드라마" in query_lower and "드라마" in genre:
+            score += 0.18
+        return score
 
     def _get_collection(self) -> Any | None:
         if self._available is False:

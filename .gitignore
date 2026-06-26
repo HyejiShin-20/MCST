@@ -22,3 +22,16 @@ google-credentials*.json
 gcp-credentials*.json
 data/tmp_media/
 data/raw/music/
+
+# --- 배포 전 보강: 런타임/대용량/누출 파일 차단 ---
+# (data/processed/ 의 시드 JSONL은 배포에 필요하므로 추적 유지)
+*.pid
+*.log
+.codex_*
+data/chroma/
+data/raw/
+*.bak
+*.old
+.vscode/
+.idea/
+.DS_Store

@@ -342,7 +342,16 @@ class Database:
     def seed_content_if_empty(self) -> None:
         with closing(self.connect()) as connection:
             with connection:
-                items = json.loads(self.sample_content_path.read_text(encoding="utf-8"))
+                raw_seed = self.sample_content_path.read_text(encoding="utf-8")
+                if self.sample_content_path.suffix == ".jsonl":
+                    # 실데이터 카탈로그(JSONL: 한 줄당 1개 객체) 지원
+                    items = [
+                        json.loads(line)
+                        for line in raw_seed.splitlines()
+                        if line.strip()
+                    ]
+                else:
+                    items = json.loads(raw_seed)
                 for item in items:
                     embedding_text = self.embedding_text(item)
                     cursor = connection.execute(

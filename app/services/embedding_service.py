@@ -104,14 +104,18 @@ class EmbeddingService:
             from openai import OpenAI  # type: ignore
 
             client = OpenAI(api_key=config.OPENAI_API_KEY or None)
-            response = client.embeddings.create(
-                model=config.OPENAI_EMBEDDING_MODEL,
-                input=texts,
-            )
-            vectors = [
-                _normalized_vector(item.embedding)
-                for item in sorted(response.data, key=lambda item: item.index)
-            ]
+            # 카탈로그가 커지면 한 번에 보내다 토큰 한도에 걸려 전체가 해시 폴백될 수 있다.
+            # 안전하게 배치로 쪼개 호출하고 순서를 보존해 이어붙인다.
+            batch_size = max(1, int(config.OPENAI_EMBEDDING_BATCH_SIZE))
+            vectors: list[np.ndarray] = []
+            for start in range(0, len(texts), batch_size):
+                chunk = texts[start : start + batch_size]
+                response = client.embeddings.create(
+                    model=config.OPENAI_EMBEDDING_MODEL,
+                    input=chunk,
+                )
+                ordered = sorted(response.data, key=lambda item: item.index)
+                vectors.extend(_normalized_vector(item.embedding) for item in ordered)
             if len(vectors) == len(texts):
                 return vectors
         except Exception:

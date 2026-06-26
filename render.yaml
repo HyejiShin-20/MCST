@@ -1,0 +1,39 @@
+# =========================================================
+# Render Blueprint — FastAPI 추천 백엔드 (경량 배포)
+# =========================================================
+# 배포: Render 대시보드 → New → Blueprint → 이 레포 선택 → Apply
+# 배포 후 발급되는 https://<name>.onrender.com 주소를 프런트(EMOTION_API_BASE)에 넣는다.
+#
+# 주의: 반드시 "수정사항이 머지된 브랜치"(보통 main)를 배포할 것.
+services:
+  - type: web
+    name: mcst-backend
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements-deploy.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      # --- 경량 런타임 (로컬 ML 모델/벡터DB 미사용) ---
+      - key: EMBEDDING_PROVIDER
+        value: openai
+      - key: RETRIEVAL_BACKEND
+        value: memory
+      # --- 실데이터 카탈로그(600개: 음악/도서/영화)를 배포본에 시드 ---
+      # 빈 DB로 부팅되면 이 JSONL에서 자동 시드된다(샘플 대신 실데이터).
+      - key: SAMPLE_CONTENT_PATH
+        value: data/processed/culture_import_music_book_movie.jsonl
+      # 실데이터 source는 'MVP curated sample'이 아니므로 노출됨. 안전하게 false 유지.
+      - key: HIDE_SAMPLE_CONTENT_IN_DEMO
+        value: "false"
+      # --- 하이브리드 감정분석: 비용 절감 위해 auto ---
+      - key: OPENAI_ANALYSIS_ENABLED
+        value: "true"
+      - key: OPENAI_EMOTION_USE_WHEN
+        value: auto
+      # --- 시크릿: Render 대시보드에서 직접 입력 (레포에 올리지 않음) ---
+      - key: OPENAI_API_KEY
+        sync: false

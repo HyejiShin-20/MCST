@@ -1,6 +1,6 @@
 const API_BASE = window.EmotionSession?.API_BASE || window.EMOTION_API_BASE || 'http://127.0.0.1:8000';
 const DEFAULT_USER_ID = 1;
-const CONTENT_TYPES = ['music', 'book'];
+const CONTENT_TYPES = ['music', 'book', 'movie'];
 
 let currentMediaId = null;
 let currentMediaCandidate = null;
@@ -24,7 +24,8 @@ function setStatus(message, isError = false) {
 function typeLabel(type) {
     return {
         music: 'MUSIC',
-        book: 'BOOK'
+        book: 'BOOK',
+        movie: 'MOVIE'
     }[type] || String(type || '').toUpperCase();
 }
 

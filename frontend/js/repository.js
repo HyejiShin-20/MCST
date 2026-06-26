@@ -147,7 +147,8 @@ function setupFilters() {
         [
             { label: '모두', value: 'all' },
             { label: '음악', value: 'music' },
-            { label: '도서', value: 'book' }
+            { label: '도서', value: 'book' },
+            { label: '영화', value: 'movie' }
         ],
         (value) => {
             currentTypeFilter = value;

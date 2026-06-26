@@ -28,6 +28,7 @@ KYOBO_PATH = (
     / "교보문고_연도별_베스트셀러(2000~2025)"
     / "kyobo_annual_bestsellers_2000_2025.csv"
 )
+KOBIS_SEED_PATH = RAW_DIR / "movie" / "seed.sql"
 
 TOKEN_RE = re.compile(r"[가-힣A-Za-z0-9]{2,}")
 
@@ -518,6 +519,328 @@ def build_book_items(path: Path, limit: int) -> tuple[list[dict[str, Any]], dict
     return items, stats
 
 
+def parse_postgres_values(line: str) -> list[str | None]:
+    marker = " VALUES ("
+    start = line.find(marker)
+    if start < 0:
+        return []
+    text = line[start + len(marker) :]
+    if text.endswith(";\n"):
+        text = text[:-2]
+    elif text.endswith(";"):
+        text = text[:-1]
+    if text.endswith(")"):
+        text = text[:-1]
+
+    values: list[str | None] = []
+    buffer: list[str] = []
+    in_string = False
+    index = 0
+    while index < len(text):
+        char = text[index]
+        if in_string:
+            if char == "'":
+                if index + 1 < len(text) and text[index + 1] == "'":
+                    buffer.append("'")
+                    index += 2
+                    continue
+                in_string = False
+            else:
+                buffer.append(char)
+        else:
+            if char == "'":
+                in_string = True
+            elif char == ",":
+                token = "".join(buffer).strip()
+                values.append(None if token.upper() == "NULL" else token)
+                buffer = []
+            else:
+                buffer.append(char)
+        index += 1
+    token = "".join(buffer).strip()
+    values.append(None if token.upper() == "NULL" else token)
+    return values
+
+
+def parse_json_people(raw: str | None, key: str = "peopleNm", limit: int = 3) -> list[str]:
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+    names: list[str] = []
+    if isinstance(parsed, list):
+        for item in parsed:
+            if not isinstance(item, dict):
+                continue
+            name = clean(item.get(key))
+            if name and name not in names:
+                names.append(name)
+            if len(names) >= limit:
+                break
+    return names
+
+
+def split_genres(genre: str) -> list[str]:
+    parts = re.split(r"[,/]", clean(genre))
+    return [part.strip() for part in parts if part.strip() and part.strip() != "기타"]
+
+
+def generation_from_year(year: int) -> str:
+    if year <= 0:
+        return "연도미상"
+    decade = (year // 10) * 10
+    return f"{decade}년대"
+
+
+def infer_movie_profile(title: str, genre: str, nation: str, year: int) -> dict[str, Any]:
+    text = " ".join([title, genre, nation]).lower()
+    emotion_tags: list[str] = []
+    topic_tags: list[str] = ["영화"]
+    cue_phrases: list[str] = []
+
+    rules = [
+        (
+            ["코미디", "comedy"],
+            ["기쁨", "즐거움"],
+            ["일상", "관계"],
+            "유쾌함과 기분 전환의 결이 있어 가볍게 환기하고 싶을 때 어울린다.",
+        ),
+        (
+            ["멜로", "로맨스", "romance"],
+            ["설렘", "따뜻함"],
+            ["사랑", "관계"],
+            "관계와 사랑의 정서를 중심으로 설렘이나 따뜻한 여운을 줄 수 있다.",
+        ),
+        (
+            ["드라마"],
+            ["잔잔함", "평범함"],
+            ["관계", "일상", "성장"],
+            "인물의 관계와 삶을 따라가며 감정을 차분히 정리하기 좋다.",
+        ),
+        (
+            ["애니메이션", "가족"],
+            ["기쁨", "따뜻함"],
+            ["가족", "성장"],
+            "따뜻함과 성장의 분위기가 있어 부담 낮은 감상에 적합하다.",
+        ),
+        (
+            ["액션", "범죄", "스릴러", "느와르", "미스터리"],
+            ["호기심"],
+            ["갈등", "도전"],
+            "긴장감과 갈등의 흐름이 있어 집중해서 몰입하고 싶을 때 맞다.",
+        ),
+        (
+            ["공포", "호러"],
+            ["불안", "호기심"],
+            ["갈등"],
+            "어두운 긴장과 불안의 분위기가 강해 자극적인 감상을 원할 때 적합하다.",
+        ),
+        (
+            ["sf", "s/f", "판타지"],
+            ["호기심", "경외", "희망"],
+            ["과학", "미래", "우주"],
+            "상상력과 미지의 세계를 다루며 호기심과 몰입감을 키운다.",
+        ),
+        (
+            ["다큐멘터리"],
+            ["호기심", "경외"],
+            ["학습", "사회"],
+            "정보와 현실 맥락을 따라가며 새롭게 알아가는 감각이 강하다.",
+        ),
+        (
+            ["사극", "전쟁", "역사"],
+            ["잔잔함", "호기심"],
+            ["기억", "사회", "갈등"],
+            "역사적 기억과 갈등을 돌아보게 하는 성찰형 감상에 가깝다.",
+        ),
+        (
+            ["뮤지컬", "공연"],
+            ["즐거움", "따뜻함"],
+            ["예술", "음악"],
+            "음악과 무대성이 있어 감정을 밝게 움직이는 감상에 어울린다.",
+        ),
+    ]
+    for keywords, emotions, topics, phrase in rules:
+        if any(keyword in text for keyword in keywords):
+            emotion_tags.extend(emotions)
+            topic_tags.extend(topics)
+            cue_phrases.append(phrase)
+
+    if not emotion_tags:
+        emotion_tags = ["호기심", "평범함"]
+        topic_tags.extend(["예술"])
+        cue_phrases.append("장르와 제작 정보를 바탕으로 새로운 감상 대상을 탐색하기 좋다.")
+
+    for genre_part in split_genres(genre):
+        topic_tags.append(genre_part)
+    if nation:
+        topic_tags.append(nation)
+    if year:
+        topic_tags.append(generation_from_year(year))
+
+    return {
+        "emotion_tags": list(dict.fromkeys(emotion_tags))[:4],
+        "topic_tags": list(dict.fromkeys(topic_tags))[:8],
+        "cue": " ".join(cue_phrases),
+    }
+
+
+def parse_kobis_movie_line(line: str) -> dict[str, Any] | None:
+    if not line.startswith("INSERT INTO public.kobis_movie VALUES"):
+        return None
+    values = parse_postgres_values(line)
+    if len(values) < 22:
+        return None
+    movie_cd = clean(values[0])
+    title = clean(values[1])
+    if not movie_cd or not title:
+        return None
+
+    year = parse_int(values[3])
+    open_date = clean(values[4])
+    type_name = clean(values[5])
+    production_status = clean(values[6])
+    nation = clean(values[9] or values[7])
+    genre = clean(values[8] or values[10])
+    original_title = clean(values[14])
+    runtime = parse_int(values[15])
+    directors = parse_json_people(values[11], limit=3)
+    actors = parse_json_people(values[18], limit=4)
+    if not genre or genre == "기타":
+        return None
+
+    profile = infer_movie_profile(title, genre, nation, year)
+    director_text = ", ".join(directors) if directors else "감독 정보 미상"
+    actor_text = ", ".join(actors) if actors else "주요 출연 정보 미상"
+    generation = generation_from_year(year)
+    metadata_parts = [
+        f"{year}년" if year else "제작연도 미상",
+        nation or "국가 미상",
+        genre,
+    ]
+    if type_name:
+        metadata_parts.append(type_name)
+    if production_status:
+        metadata_parts.append(production_status)
+    if runtime:
+        metadata_parts.append(f"{runtime}분")
+    if original_title:
+        metadata_parts.append(f"원제/별칭: {original_title}")
+
+    summary = (
+        f"KOBIS 영화 메타데이터 기반 콘텐츠. {' · '.join(metadata_parts)}. "
+        f"감독: {director_text}. 출연/참여: {actor_text}. "
+        f"추천 태깅 힌트: {profile['cue']}"
+    )
+    tagging_text = "\n".join(
+        [
+            f"제목: {title}",
+            "유형: movie",
+            f"장르: {genre}",
+            f"국가: {nation}",
+            f"제작연도: {year or '미상'}",
+            f"세대: {generation}",
+            f"감독: {director_text}",
+            f"출연: {actor_text}",
+            f"요약: {summary}",
+            f"감정 태그 후보: {', '.join(profile['emotion_tags'])}",
+            f"주제 태그 후보: {', '.join(profile['topic_tags'])}",
+            "원천: kobis_seed_sql",
+        ]
+    )
+    return {
+        "content_id": f"movie_kobis_{movie_cd}",
+        "content_type": "movie",
+        "title": title,
+        "creator": director_text,
+        "genre": genre.replace(",", "/"),
+        "summary": summary,
+        "source": "kobis_seed_sql",
+        "emotion_tags": profile["emotion_tags"],
+        "topic_tags": profile["topic_tags"],
+        "embedding_text": tagging_text,
+        "raw_description": summary,
+        "processed_description": summary,
+        "tagging_text": tagging_text,
+        "import_metadata": {
+            "movie_cd": movie_cd,
+            "movie_nm_en": clean(values[2]),
+            "open_date": open_date,
+            "type_name": type_name,
+            "production_status": production_status,
+            "nation": nation,
+            "year": year,
+            "runtime": runtime,
+            "directors": directors,
+            "actors": actors,
+        },
+    }
+
+
+def movie_score(item: dict[str, Any]) -> float:
+    metadata = item.get("import_metadata") or {}
+    year = int(metadata.get("year") or 0)
+    genre = item.get("genre") or ""
+    nation = metadata.get("nation") or ""
+    score = 0.0
+    if year:
+        score += max(0, year - 1980) / 2.5
+    if metadata.get("production_status") == "개봉":
+        score += 22.0
+    if nation == "한국":
+        score += 18.0
+    if metadata.get("type_name") == "장편":
+        score += 8.0
+    if metadata.get("directors"):
+        score += 8.0
+    if metadata.get("actors"):
+        score += 5.0
+    if metadata.get("runtime"):
+        score += 3.0
+    if genre and genre != "기타":
+        score += 12.0
+    if any(keyword in genre for keyword in ["드라마", "코미디", "멜로", "로맨스", "액션", "스릴러", "SF", "애니메이션"]):
+        score += 5.0
+    return score
+
+
+def build_movie_items(path: Path, limit: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if limit <= 0 or not path.exists():
+        return [], {
+            "kobis_seed_exists": path.exists(),
+            "kobis_seed_path": str(path),
+            "kobis_movie_rows": 0,
+            "movie_items": 0,
+        }
+
+    candidates: list[dict[str, Any]] = []
+    movie_rows = 0
+    with path.open("r", encoding="utf-8", errors="replace") as handle:
+        for line in handle:
+            if not line.startswith("INSERT INTO public.kobis_movie VALUES"):
+                continue
+            movie_rows += 1
+            item = parse_kobis_movie_line(line)
+            if item:
+                candidates.append(item)
+
+    ranked = sorted(candidates, key=movie_score, reverse=True)
+    items = ranked[:limit]
+    stats = {
+        "kobis_seed_exists": True,
+        "kobis_seed_path": str(path),
+        "kobis_movie_rows": movie_rows,
+        "kobis_movie_candidates": len(candidates),
+        "movie_items": len(items),
+        "movie_items_korean": sum(
+            1 for item in items if (item.get("import_metadata") or {}).get("nation") == "한국"
+        ),
+    }
+    return items, stats
+
+
 def write_processed(items: list[dict[str, Any]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="\n") as handle:
@@ -527,15 +850,36 @@ def write_processed(items: list[dict[str, Any]], path: Path) -> None:
             handle.write(json.dumps(safe_item, ensure_ascii=False) + "\n")
 
 
+def filter_existing_items(database: Database, items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    if not items:
+        return [], 0
+    ids = [str(item["content_id"]) for item in items]
+    existing: set[str] = set()
+    with database.connect() as connection:
+        for start in range(0, len(ids), 900):
+            chunk = ids[start : start + 900]
+            placeholders = ",".join("?" for _ in chunk)
+            rows = connection.execute(
+                f"SELECT content_id FROM content_items WHERE content_id IN ({placeholders})",
+                chunk,
+            ).fetchall()
+            existing.update(str(row[0]) for row in rows)
+    return [item for item in items if str(item["content_id"]) not in existing], len(existing)
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Import real music/book culture data into the MVP DB.")
+    parser = argparse.ArgumentParser(description="Import real music/book/movie culture data into the MVP DB.")
     parser.add_argument("--music-limit", type=int, default=500)
     parser.add_argument("--book-limit", type=int, default=500)
+    parser.add_argument("--movie-limit", type=int, default=300)
     parser.add_argument("--skip-music", action="store_true")
     parser.add_argument("--skip-books", action="store_true")
+    parser.add_argument("--skip-movies", action="store_true")
+    parser.add_argument("--movie-seed-path", type=Path, default=KOBIS_SEED_PATH)
     parser.add_argument("--skip-db", action="store_true")
+    parser.add_argument("--skip-existing", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--processed-output", type=Path, default=PROCESSED_DIR / "culture_import_music_book.jsonl")
+    parser.add_argument("--processed-output", type=Path, default=PROCESSED_DIR / "culture_import_music_book_movie.jsonl")
     return parser
 
 
@@ -559,20 +903,35 @@ def main() -> None:
         items.extend(book_items)
         stats.update(book_stats)
 
+    if not args.skip_movies:
+        movie_items, movie_stats = build_movie_items(args.movie_seed_path, max(0, args.movie_limit))
+        items.extend(movie_items)
+        stats.update(movie_stats)
+
+    existing_skipped = 0
+    database: Database | None = None
+    if args.skip_existing:
+        database = Database()
+        database.initialize()
+        items, existing_skipped = filter_existing_items(database, items)
+
     write_processed(items, args.processed_output)
     db_result = {"skipped": bool(args.skip_db or args.dry_run)}
     if not args.skip_db and not args.dry_run:
-        database = Database()
-        database.initialize()
+        if database is None:
+            database = Database()
+            database.initialize()
         db_result = database.upsert_content_items(items, reset_tagging=True)
 
     report = {
         "music_limit": args.music_limit,
         "book_limit": args.book_limit,
+        "movie_limit": args.movie_limit,
         "processed_output": str(args.processed_output),
         "total_items": len(items),
         "content_type_counts": dict(Counter(item["content_type"] for item in items)),
         "stats": stats,
+        "existing_skipped": existing_skipped,
         "db": db_result,
         "raw_lyrics_persisted": False,
     }
