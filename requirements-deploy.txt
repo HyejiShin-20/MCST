@@ -15,4 +15,5 @@ pydantic>=2.13
 python-multipart>=0.0.20
 numpy>=2.0
 openai>=2.0
+google-cloud-vision>=3.10
 openpyxl>=3.1
