@@ -607,6 +607,10 @@ input[type="file"] {
     padding: 22px 22px 8px 22px;
 }
 
+.auth-form[hidden] {
+    display: none;
+}
+
 .auth-field {
     display: flex;
     flex-direction: column;
